@@ -59,4 +59,4 @@ if __name__ == "__main__":
             print(
                 f"Create new reference item for {i['DOI']['value']}    {i['wdlabel']['value']}"
             )
-            newitem.write()
+            newitem.write(summary="Create new reference item from DOI in reference statement")
