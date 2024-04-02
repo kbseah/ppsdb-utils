@@ -48,8 +48,8 @@ if __name__ == "__main__":
         q = wbi.item.get(i['qid']['value'])
         q.claims.add(datatypes.Item(i['P29']['value'], prop_nr="P29"))
         if args.dryrun:
-            print(f"DRY RUN: Link {q} to parent taxon")
+            print(f"DRY RUN: Link {i['qid']['value']} to parent taxon")
         else:
-            print(f"Link {q} to parent taxon")
+            print(f"Link {i['qid']['value']} to parent taxon")
             q.write(summary="Link host taxon to genus by name")
 
