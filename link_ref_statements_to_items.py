@@ -21,7 +21,15 @@ from common import wbi_config, login, sparql_prefixes
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dryrun", action="store_true")
+    parser.add_argument("--claim", type=str, default="P19", help="""P19 - interaction; P36 - environmental material; P38 - environmental system; P40 - local environmental context; P41 - interacts experimentally with""")
     args = parser.parse_args()
+
+    allowed_claims = ["P19", "P36", "P38", "P40", "P41"]
+    if args.claim in allowed_claims:
+        item_class = args.claim
+    else:
+        print(f"Unrecognized property identifier {args.claim}, please specify one of {' '.join(allowed_claims)}")
+        exit()
 
     query_refs = """
     SELECT DISTINCT ?ref ?DOI WHERE {
@@ -38,14 +46,14 @@ if __name__ == "__main__":
     }
 
     query_items_with_unlinked_refs = """
-    SELECT DISTINCT ?host ?interaction WHERE {
-      ?host pps:P19 ?interaction.
-      ?interaction prov:wasDerivedFrom ?refnode.
+    SELECT DISTINCT ?host ?statement WHERE {
+      ?host pps:%s ?statement.
+      ?statement prov:wasDerivedFrom ?refnode.
       ?refnode ppsr:P27 ?doi.
       FILTER NOT EXISTS { ?refnode ppsr:P23 ?statedin }
       BIND (UCASE(STR(?doi)) AS ?DOI)
     }
-    """
+    """ % (item_class)
 
     unlinked_refs = wbi_helpers.execute_sparql_query(
         query=query_items_with_unlinked_refs, prefix=sparql_prefixes
@@ -63,9 +71,9 @@ if __name__ == "__main__":
 
     for q in items_to_process:
         current_item = wbi.item.get(q)
-        for interaction in current_item.claims.get("P19"):
+        for statement in current_item.claims.get(item_class):
             counter = 0
-            for current_ref in interaction.references:
+            for current_ref in statement.references:
                 if (
                     len(current_ref.snaks.get("P23")) == 0
                     and len(current_ref.snaks.get("P27")) == 1
