@@ -8,15 +8,23 @@ from wikibaseintegrator import WikibaseIntegrator, datatypes, wbi_helpers
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dryrun", action="store_true")
+    parser.add_argument("--claim", type=str, default="P19", help="""P19 - interaction; P36 - environmental material; P38 - environmental system; P40 - local environmental context; P41 - interacts experimentally with""")
     args = parser.parse_args()
 
-    query = """
-    SELECT DISTINCT ?wdlabel ?DOI ?wdref
+    allowed_claims = ["P19", "P36", "P38", "P40", "P41"]
+    if args.claim in allowed_claims:
+        item_class = args.claim
+    else:
+        print(f"Unrecognized property identifier {args.claim}, please specify one of {' '.join(allowed_claims)}")
+        exit()
+
+
+    query = """SELECT DISTINCT ?wdlabel ?DOI ?wdref
     WITH {
       SELECT DISTINCT ?host ?DOI 
       WHERE {
-        ?host pps:P19 ?interaction.
-        ?interaction prov:wasDerivedFrom ?refnode.
+        ?host pps:%s ?statement.
+        ?statement prov:wasDerivedFrom ?refnode.
         ?refnode ppsr:P27 ?doi.
         # check that no reference item already linked in this statement
         FILTER NOT EXISTS { ?refnode ppsr:P23 ?statedin }
@@ -28,9 +36,9 @@ if __name__ == "__main__":
                ppt:P13 ?DOI. 
         }
       }
-    } AS %dois
+    } AS %%dois
     WHERE {
-      INCLUDE %dois
+      INCLUDE %%dois
       SERVICE <https://query.wikidata.org/sparql> {
         # find wikidata items with this DOI
         ?wdref wdt:P356 ?DOI;
@@ -38,7 +46,7 @@ if __name__ == "__main__":
         FILTER ( LANG(?wdlabel) = "en" )
       }
     }
-    """
+    """ % (item_class)  # percent sign in SPARQL query is escaped as double-%
 
     recs = wbi_helpers.execute_sparql_query(query=query, prefix=sparql_prefixes)
 
