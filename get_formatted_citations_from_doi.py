@@ -28,6 +28,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Do not print message for each item updated",
     )
+    parser.add_argument(
+        "--max_citation_len",
+        default=400,
+        help="Maximum length of formatted citation string; limit is set by Wikibase configuration",
+    )
     args = parser.parse_args()
 
     wbi = WikibaseIntegrator(login=login)
@@ -70,9 +75,9 @@ if __name__ == "__main__":
             # replace consecutive whitespace, nonstandard spaces, and newlines
             # with standard space character
             citation = " ".join(citation.split())
-            if len(citation) > 1500:
+            if len(citation) > args.max_citation_len:
                 print(
-                    f"Citation for {i['doi']} is longer than 1500 characters. Skipping..."
+                    f"Citation for {i['doi']} is longer than {str(args.max_citation_len)} characters. Skipping..."
                 )
             else:
                 item = wbi.item.get(i["qid"])
