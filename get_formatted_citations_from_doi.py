@@ -5,6 +5,7 @@ import argparse
 from common import wbi_config, login, sparql_prefixes
 from wikibaseintegrator import WikibaseIntegrator, datatypes, wbi_helpers
 from wikibaseintegrator.models import References, Reference, Qualifiers
+from wikibaseintegrator.wbi_enums import ActionIfExists
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -81,7 +82,8 @@ if __name__ == "__main__":
                 )
             else:
                 item = wbi.item.get(i["qid"])
-                item.claims.add(datatypes.String(prop_nr="P14", value=citation))
+                # Do not overwrite if value already exists, which may happen if the SPARQL cache is not updated
+                item.claims.add(datatypes.String(prop_nr="P14", value=citation), action_if_exists=ActionIfExists.KEEP)
                 count_updated += 1
                 if args.dryrun:
                     if not args.quiet:
