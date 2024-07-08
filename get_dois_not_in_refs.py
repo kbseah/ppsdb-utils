@@ -7,7 +7,7 @@ from wikibaseintegrator import WikibaseIntegrator, datatypes, wbi_helpers
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Get DOIs not represented in reference items; use output to import new references to Wikiadta with SourceMD"
+        description="Get DOIs not represented in reference items; use output to import new references to Wikiadta with SourceMD or Scholia"
     )
     parser.add_argument("--dryrun", action="store_true")
     parser.add_argument("--claim", type=str, default="P19", help="""P19 - interaction; P36 - environmental material; P38 - environmental system; P40 - local environmental context; P41 - interacts experimentally with""")
