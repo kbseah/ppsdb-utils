@@ -8,10 +8,10 @@ from wikibaseintegrator import WikibaseIntegrator, datatypes, wbi_helpers
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dryrun", action="store_true")
-    parser.add_argument("--claim", type=str, default="P19", help="""P19 - interaction; P36 - environmental material; P38 - environmental system; P40 - local environmental context; P41 - interacts experimentally with""")
+    parser.add_argument("--claim", type=str, default="P19", help="""P19 - interaction; P36 - environmental material; P38 - environmental system; P40 - local environmental context; P41 - interacts experimentally with; P28 - representative sequence for placeholder taxon; P34 - representative SSU rRNA sequence record""")
     args = parser.parse_args()
 
-    allowed_claims = ["P19", "P36", "P38", "P40", "P41"]
+    allowed_claims = ["P19", "P36", "P38", "P40", "P41", "P28", "P34"]
     if args.claim in allowed_claims:
         item_class = args.claim
     else:
