@@ -10,10 +10,10 @@ if __name__ == "__main__":
         description="Get DOIs not represented in reference items; use output to import new references to Wikiadta with SourceMD or Scholia"
     )
     parser.add_argument("--dryrun", action="store_true")
-    parser.add_argument("--claim", type=str, default="P19", help="""P19 - interaction; P36 - environmental material; P38 - environmental system; P40 - local environmental context; P41 - interacts experimentally with; P28 - representative sequence for placeholder taxon; P34 - representative SSU rRNA sequence record""")
+    parser.add_argument("--claim", type=str, default="P19", help="""P19 - interaction; P36 - environmental material; P38 - environmental system; P40 - local environmental context; P41 - interacts experimentally with; P28 - representative sequence for placeholder taxon; P34 - representative SSU rRNA sequence record; P46 - representative genome sequence record""")
     args = parser.parse_args()
 
-    allowed_claims = ["P19", "P36", "P38", "P40", "P41", "P28", "P34"]
+    allowed_claims = ["P19", "P36", "P38", "P40", "P41", "P28", "P34", "P46"]
     if args.claim in allowed_claims:
         item_class = args.claim
     else:
